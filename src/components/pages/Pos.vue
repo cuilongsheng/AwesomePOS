@@ -26,8 +26,8 @@
                               fixed="right"
                               label="操作">
                               <template slot-scope="scope">
-                              <el-button @click="addGoodLists(scope.row)" type="text" size="small">增加</el-button>
-                              <el-button type="text" size="small">删除</el-button>
+                              <el-button type="danger" size="small" @click="delSingleGoods(scope.row)" circle><i class="iconfont icon-jian"></i></true></el-button>
+                              <el-button @click="addGoodLists(scope.row)" type="primary" size="small" circle><i class="iconfont icon-jia"></i></circle></el-button>
                             </template>
                            </el-table-column>
                         </el-table>
@@ -41,11 +41,11 @@
                     <div>
                 </div>
                 </el-tabs>
-                 
+
                 <el-row class="btns">
                   <el-button type="warning" >挂单</el-button>
-                  <el-button type="danger" >删除</el-button>
-                  <el-button type="success" >结账</el-button>
+                  <el-button type="danger" @click="delAll">删除 </el-button>
+                  <el-button type="success" @click="checkout">结账</el-button>
                 </el-row>
             </el-col>
             <!--商品展示-->
@@ -164,13 +164,50 @@ export default {
         let newGood = {goodsId:goods.goodsId,goodsName:goods.goodsName,price:goods.price,count:1};
         this.tableData.push(newGood);
       };
+      this.getTotal();
+    },
+    getTotal(){
+      this.totalCount=0;
+      this.totalMoney=0;
       //算出总价格和总数量
       this.tableData.forEach(e=>{
         this.totalCount += e.count;
-        this.totalMoney = this.totalMoney+ (e.price* e.count) 
+        this.totalMoney = this.totalMoney+ (e.price* e.count)
       });
     },
-    
+    delSingleGoods(goods){
+      if(goods.count>1){
+        let arr = this.tableData.filter(function(o){
+          return o.goodsId==goods.goodsId
+        });
+        arr[0].count--;
+        this.getTotal();
+      }else{
+        this.tableData = this.tableData.filter(o=>o.goodsId != goods.goodsId);
+        this.getTotal();
+      }
+    },
+    delAll(){
+      if(this.totalCount===0){
+        this.$message.error('您还未点单!');
+      }else{
+        this.tableData=[];
+        this.totalCount=0;
+        this.totalMoney = 0;
+      }
+    },
+    checkout(){
+      if(this.totalCount != 0){
+        this.$message({
+          message:'结账成功, 总金额为: '+ this.totalMoney +'元, 谢谢您的惠顾!',
+          type: "success"
+        });
+        this.delAll();
+      }else{
+        this.$message.error('不能空结账,谢谢!');
+      }
+
+    }
   }
 };
 </script>
@@ -241,5 +278,8 @@ export default {
 }
 .total span:nth-child(2){
   margin-left: 0.4rem;
+}
+.el-button--small.is-circle{
+  padding:0.05rem;
 }
 </style>

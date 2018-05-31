@@ -62,9 +62,11 @@ export default {
   padding: 0.05rem 0;
 }
 .router-link-active{
-  color:white;
+  color:#fff;
+  /* background-color:darkgoldenrod; */
 }
 .router-link-active li{
-    border-bottom: 0.02rem solid rgb(219, 211, 211);
+    border-bottom: 0.02rem solid #fff;
+    background-color:#e6a23c;
 }
 </style>
